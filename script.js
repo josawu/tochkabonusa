@@ -1,5 +1,5 @@
 // ==================== КОНФИГУРАЦИЯ ====================
-const BACKEND_URL = 'https://script.google.com/macros/s/1jjFqaimMiV6-AjP1I3DvPRxOYJfUoNNneDk3yG3jMzU/exec';
+const BACKEND_URL = 'https://script.google.com/macros/s/118QQ7Y4XcdQCwVCJ3RUrz26zah2b3WU63osykByNhMI/exec';
 
 // ==================== ОСНОВНАЯ ФУНКЦИЯ ====================
 async function loadUserData() {
