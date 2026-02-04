@@ -1,96 +1,118 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffee Club | Точка Бонуса</title>
+    <title>BLACK COFFEE LOYALTY</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <header>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
             <div class="logo">
-                <i class="fas fa-coffee"></i>
-                <h1>Точка Бонуса</h1>
+                <div class="logo-icon">☕</div>
+                <h1>BLACK COFFEE</h1>
+                <div class="logo-subtitle">LOYALTY PROGRAM</div>
             </div>
             <div class="user-info" id="userInfo">
                 <div class="loader"></div>
             </div>
         </header>
 
-        <main>
-            <div class="stats-card">
-                <div class="stat">
-                    <div class="stat-icon"><i class="fas fa-mug-hot"></i></div>
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">🛒</div>
                     <div class="stat-content">
-                        <h3>Ваши покупки</h3>
-                        <p class="stat-value" id="balance">0</p>
+                        <div class="stat-label">ПОКУПОК</div>
+                        <div class="stat-value" id="balance">0</div>
                     </div>
                 </div>
-                <div class="stat">
-                    <div class="stat-icon"><i class="fas fa-gift"></i></div>
+                <div class="stat-card">
+                    <div class="stat-icon">🎁</div>
                     <div class="stat-content">
-                        <h3>Бесплатные кофе</h3>
-                        <p class="stat-value" id="freeCoffee">0</p>
+                        <div class="stat-label">БЕСПЛАТНО</div>
+                        <div class="stat-value" id="freeCoffee">0</div>
                     </div>
                 </div>
             </div>
 
+            <!-- Progress -->
             <div class="progress-section">
-                <h3><i class="fas fa-star"></i> До следующего кофе</h3>
-                <div class="progress-bar">
+                <div class="progress-header">
+                    <span>ДО СЛЕДУЮЩЕГО КОФЕ</span>
+                    <span id="progressText">0/10</span>
+                </div>
+                <div class="progress-track">
                     <div class="progress-fill" id="progressFill"></div>
                 </div>
-                <p class="progress-text" id="progressText">0/10</p>
+                <div class="progress-percent" id="progressPercent">0%</div>
             </div>
 
-            <div class="instructions">
-                <h3><i class="fas fa-camera"></i> Как получить бонус</h3>
-                <ol>
-                    <li>Сфотографируйте чек из кофемата</li>
-                    <li>Отправьте фото в <a href="https://t.me/coffe74_bot" class="bot-link">@coffe74_bot</a></li>
-                    <li>Ожидайте подтверждения (1-2 минуты)</li>
-                    <li>После 10 покупок получите бесплатный кофе!</li>
+            <!-- How It Works -->
+            <div class="instructions-card">
+                <h2><i class="fas fa-camera"></i> КАК РАБОТАЕТ</h2>
+                <ol class="steps-list">
+                    <li>Сфотографируйте чек после покупки</li>
+                    <li>Отправьте фото в @blackcoffee_loyalty_bot</li>
+                    <li>Получите 1 балл после проверки</li>
+                    <li>10 баллов = 1 бесплатный кофе</li>
                 </ol>
-                <button class="btn" onclick="openBot()">
-                    <i class="fas fa-paper-plane"></i> Перейти в бота
+                <button class="action-btn" onclick="openTelegram()">
+                    <i class="fab fa-telegram"></i> ОТКРЫТЬ БОТА
                 </button>
             </div>
 
-            <div class="coffee-list">
-                <h3><i class="fas fa-list"></i> Доступные напитки</h3>
-                <div class="coffee-items">
-                    <div class="coffee-item">Эспрессо</div>
-                    <div class="coffee-item">Американо</div>
-                    <div class="coffee-item">Капучино</div>
-                    <div class="coffee-item">Латте</div>
+            <!-- Available Drinks -->
+            <div class="drinks-section">
+                <h2><i class="fas fa-mug-hot"></i> ДОСТУПНЫЕ НАПИТКИ</h2>
+                <div class="drinks-grid">
+                    <div class="drink-item">ESPRESSO</div>
+                    <div class="drink-item">AMERICANO</div>
+                    <div class="drink-item">CAPPUCCINO</div>
+                    <div class="drink-item">LATTE</div>
+                    <div class="drink-item">FLAT WHITE</div>
+                    <div class="drink-item">MACCHIATO</div>
                 </div>
             </div>
 
-            <div class="qr-section">
-                <h3><i class="fas fa-qrcode"></i> QR-код для друзей</h3>
-                <div class="qr-placeholder">
-                    <p>Отсканируйте, чтобы присоединиться</p>
-                    <div class="qr-code">📱</div>
-                </div>
+            <!-- Rules -->
+            <div class="rules-card">
+                <h2><i class="fas fa-info-circle"></i> ПРАВИЛА</h2>
+                <ul class="rules-list">
+                    <li>1 покупка = 1 балл</li>
+                    <li>10 баллов = 1 кофе бесплатно</li>
+                    <li>Чеки проверяются вручную (1-2 минуты)</li>
+                    <li>Баллы не сгорают</li>
+                    <li>Программа действует бессрочно</li>
+                </ul>
             </div>
         </main>
 
-        <footer>
-            <p>1 покупка = 1 балл • 10 баллов = 1 кофе бесплатно</p>
-            <p class="footer-small">Точка Бонуса • Система лояльности</p>
+        <!-- Footer -->
+        <footer class="app-footer">
+            <div class="footer-text">
+                BLACK COFFEE LOYALTY • МИНИМАЛИЗМ • СТИЛЬ
+            </div>
+            <div class="footer-copy">
+                &copy; 2024 • Все права защищены
+            </div>
         </footer>
     </div>
 
+    <!-- Scripts -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="script.js"></script>
     <script>
-        function openBot() {
-            if (window.Telegram && window.Telegram.WebApp) {
-                window.Telegram.WebApp.openTelegramLink('https://t.me/coffe74_bot');
+        function openTelegram() {
+            if (window.Telegram && Telegram.WebApp) {
+                Telegram.WebApp.openTelegramLink('https://t.me/blackcoffee_loyalty_bot');
             } else {
-                window.open('https://t.me/coffe74_bot', '_blank');
+                window.open('https://t.me/blackcoffee_loyalty_bot', '_blank');
             }
         }
     </script>
