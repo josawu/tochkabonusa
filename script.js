@@ -118,21 +118,20 @@ function animateCounter(elementId, finalValue) {
 function showDemoMode() {
     document.getElementById('userInfo').innerHTML = `
         <div style="text-align: right;">
-            <div style="font-weight: 700; margin-bottom: 3px;">ДЕМО РЕЖИМ</div>
-            <div style="font-size: 12px; color: #666;">Откройте в Telegram</div>
+            <div style="font-weight: 700; margin-bottom: 3px;">ВОЙДИТЕ В БОТА</div>
+            <div style="font-size: 12px; color: #666;">Напишите /start в @blackcoffee_loyalty_bot</div>
         </div>
     `;
     
-    // Тестовые данные
-    const testData = {
-        balance: 7,
-        free_coffee: 1,
+    // Показываем нулевые значения вместо демо
+    const emptyData = {
+        balance: 0,
+        free_coffee: 0,
         needed: 10
     };
     
-    displayUserStats(testData);
+    displayUserStats(emptyData);
 }
-
 // ==================== РЕЖИМ ОШИБКИ ====================
 function showErrorState() {
     document.getElementById('userInfo').innerHTML = `
