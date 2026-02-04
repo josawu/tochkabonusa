@@ -4,7 +4,7 @@ const BACKEND_URL = 'https://script.google.com/macros/s/118QQ7Y4XcdQCwVCJ3RUrz26
 // ==================== ОСНОВНАЯ ФУНКЦИЯ ====================
 async function loadUserData() {
     try {
-        // Проверяем, открыто ли в Telegram
+        // Проверяем, открыто ли в Telegram Web App
         if (window.Telegram && Telegram.WebApp) {
             const tg = Telegram.WebApp;
             
@@ -20,10 +20,12 @@ async function loadUserData() {
             if (userId) {
                 await fetchAndDisplayUserData(userId, initData.user);
             } else {
-                showDemoMode();
+                // Если нет userId, показываем инструкцию
+                showLoginInstruction();
             }
         } else {
-            showDemoMode();
+            // Если открыто не в Telegram, показываем ошибку
+            showNotInTelegramError();
         }
     } catch (error) {
         console.error('Ошибка загрузки:', error);
@@ -31,6 +33,55 @@ async function loadUserData() {
     }
 }
 
+// ==================== ПОКАЗАТЬ ИНСТРУКЦИЮ ВХОДА ====================
+function showLoginInstruction() {
+    document.getElementById('userInfo').innerHTML = `
+        <div style="text-align: center;">
+            <div style="font-weight: 700; margin-bottom: 5px; color: #ff5555;">ТРЕБУЕТСЯ ВХОД</div>
+            <div style="font-size: 12px; color: #888;">
+                1. Откройте бота @blackcoffee_loyalty_bot<br>
+                2. Нажмите кнопку "ОТКРЫТЬ ЛИЧНЫЙ КАБИНЕТ"<br>
+                3. Или напишите /start в боте
+            </div>
+        </div>
+    `;
+    
+    // Показываем нулевые значения
+    const emptyData = {
+        balance: 0,
+        free_coffee: 0,
+        needed: 10
+    };
+    
+    displayUserStats(emptyData);
+}
+
+// ==================== ОШИБКА: НЕ В TELEGRAM ====================
+function showNotInTelegramError() {
+    document.getElementById('userInfo').innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <div style="font-size: 48px; margin-bottom: 20px;">📱</div>
+            <div style="font-weight: 700; margin-bottom: 10px; color: #fff;">ОТКРОЙТЕ В TELEGRAM</div>
+            <div style="font-size: 14px; color: #aaa; margin-bottom: 20px;">
+                Это приложение работает только внутри Telegram
+            </div>
+            <a href="https://t.me/blackcoffee_loyalty_bot" 
+               style="display: inline-block; 
+                      background: #0088cc; 
+                      color: white; 
+                      padding: 12px 24px; 
+                      border-radius: 8px; 
+                      text-decoration: none;
+                      font-weight: 700;">
+                ОТКРЫТЬ БОТА
+            </a>
+        </div>
+    `;
+    
+    // Скрываем всю статистику
+    document.querySelector('.stats-grid').style.display = 'none';
+    document.querySelector('.progress-section').style.display = 'none';
+}
 // ==================== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ====================
 async function fetchAndDisplayUserData(userId, user) {
     try {
