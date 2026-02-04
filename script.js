@@ -4,143 +4,99 @@ const BACKEND_URL = 'https://script.google.com/macros/s/118QQ7Y4XcdQCwVCJ3RUrz26
 // ==================== ОСНОВНАЯ ФУНКЦИЯ ====================
 async function loadUserData() {
     try {
-        // Проверяем, открыто ли в Telegram Web App
+        // Получаем ID пользователя из Telegram
+        let userId = null;
+        let userData = null;
+        
         if (window.Telegram && Telegram.WebApp) {
             const tg = Telegram.WebApp;
-            
-            // Инициализация Telegram Web App
-            tg.ready();
             tg.expand();
-            tg.enableClosingConfirmation();
-            
-            // Получаем данные пользователя
-            const initData = tg.initDataUnsafe;
-            const userId = initData.user?.id;
-            
-            if (userId) {
-                await fetchAndDisplayUserData(userId, initData.user);
-            } else {
-                // Если нет userId, показываем инструкцию
-                showLoginInstruction();
-            }
-        } else {
-            // Если открыто не в Telegram, показываем ошибку
-            showNotInTelegramError();
+            userId = tg.initDataUnsafe.user?.id;
+            userData = tg.initDataUnsafe.user;
         }
+        
+        // Если нет ID из Telegram, пробуем из URL
+        if (!userId) {
+            const urlParams = new URLSearchParams(window.location.search);
+            userId = urlParams.get('user') || urlParams.get('user_id');
+        }
+        
+        // Если вообще нет ID - показываем нулевые значения
+        if (!userId) {
+            showEmptyState();
+            return;
+        }
+        
+        // Загружаем данные пользователя
+        await fetchUserData(userId, userData);
+        
     } catch (error) {
-        console.error('Ошибка загрузки:', error);
-        showErrorState();
+        console.log('Ошибка загрузки:', error);
+        showEmptyState();
     }
 }
 
-// ==================== ПОКАЗАТЬ ИНСТРУКЦИЮ ВХОДА ====================
-function showLoginInstruction() {
-    document.getElementById('userInfo').innerHTML = `
-        <div style="text-align: center;">
-            <div style="font-weight: 700; margin-bottom: 5px; color: #ff5555;">ТРЕБУЕТСЯ ВХОД</div>
-            <div style="font-size: 12px; color: #888;">
-                1. Откройте бота @blackcoffee_loyalty_bot<br>
-                2. Нажмите кнопку "ОТКРЫТЬ ЛИЧНЫЙ КАБИНЕТ"<br>
-                3. Или напишите /start в боте
-            </div>
-        </div>
-    `;
-    
-    // Показываем нулевые значения
-    const emptyData = {
-        balance: 0,
-        free_coffee: 0,
-        needed: 10
-    };
-    
-    displayUserStats(emptyData);
-}
-
-// ==================== ОШИБКА: НЕ В TELEGRAM ====================
-function showNotInTelegramError() {
-    document.getElementById('userInfo').innerHTML = `
-        <div style="text-align: center; padding: 20px;">
-            <div style="font-size: 48px; margin-bottom: 20px;">📱</div>
-            <div style="font-weight: 700; margin-bottom: 10px; color: #fff;">ОТКРОЙТЕ В TELEGRAM</div>
-            <div style="font-size: 14px; color: #aaa; margin-bottom: 20px;">
-                Это приложение работает только внутри Telegram
-            </div>
-            <a href="https://t.me/blackcoffee_loyalty_bot" 
-               style="display: inline-block; 
-                      background: #0088cc; 
-                      color: white; 
-                      padding: 12px 24px; 
-                      border-radius: 8px; 
-                      text-decoration: none;
-                      font-weight: 700;">
-                ОТКРЫТЬ БОТА
-            </a>
-        </div>
-    `;
-    
-    // Скрываем всю статистику
-    document.querySelector('.stats-grid').style.display = 'none';
-    document.querySelector('.progress-section').style.display = 'none';
-}
 // ==================== ЗАГРУЗКА ДАННЫХ ПОЛЬЗОВАТЕЛЯ ====================
-async function fetchAndDisplayUserData(userId, user) {
+async function fetchUserData(userId, telegramUser) {
     try {
-        // Обновляем информацию о пользователе
-        updateUserInfo(user);
+        // Обновляем информацию о пользователе в интерфейсе
+        if (telegramUser && telegramUser.first_name) {
+            document.getElementById('userInfo').innerHTML = `
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; margin-bottom: 3px;">${telegramUser.first_name}</div>
+                    <div style="font-size: 12px; color: #666;">${telegramUser.username ? '@' + telegramUser.username : ''}</div>
+                </div>
+            `;
+        } else {
+            document.getElementById('userInfo').innerHTML = `
+                <div style="text-align: right;">
+                    <div style="font-weight: 700; margin-bottom: 3px;">КОФЕМАН</div>
+                    <div style="font-size: 12px; color: #666;">Black Coffee Loyalty</div>
+                </div>
+            `;
+        }
         
-        // Запрашиваем данные с бэкенда
+        // Запрашиваем данные с сервера
         const response = await fetch(`${BACKEND_URL}?user_id=${userId}`);
         const data = await response.json();
         
-        if (data.error && data.error !== 'User not found') {
-            throw new Error(data.error);
+        // Если пользователь не найден в базе - показываем нули
+        if (data.error) {
+            showEmptyState();
+            return;
         }
         
-        // Отображаем данные
-        displayUserStats(data);
+        // Обновляем статистику
+        updateStats(data);
         
     } catch (error) {
-        console.error('Ошибка загрузки данных:', error);
-        showDemoMode();
+        console.log('Ошибка загрузки данных:', error);
+        showEmptyState();
     }
 }
 
-// ==================== ОБНОВЛЕНИЕ ИНФОРМАЦИИ О ПОЛЬЗОВАТЕЛЕ ====================
-function updateUserInfo(user) {
-    const userInfoElement = document.getElementById('userInfo');
-    
-    if (user && user.first_name) {
-        userInfoElement.innerHTML = `
-            <div style="text-align: right;">
-                <div style="font-weight: 700; margin-bottom: 3px;">${user.first_name}</div>
-                <div style="font-size: 12px; color: #666;">${user.username ? '@' + user.username : ''}</div>
-            </div>
-        `;
-    }
-}
-
-// ==================== ОТОБРАЖЕНИЕ СТАТИСТИКИ ====================
-function displayUserStats(data) {
+// ==================== ОБНОВЛЕНИЕ СТАТИСТИКИ ====================
+function updateStats(data) {
     const balance = data.balance || 0;
     const freeCoffee = data.free_coffee || 0;
     const needed = data.needed || 10;
+    
+    // Вычисляем прогресс
+    const progress = Math.min((balance / needed) * 100, 100);
     
     // Обновляем значения
     document.getElementById('balance').textContent = balance;
     document.getElementById('freeCoffee').textContent = freeCoffee;
     document.getElementById('progressText').textContent = `${balance}/${needed}`;
+    document.getElementById('progressFill').style.width = `${progress}%`;
+    document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
     
-    // Обновляем прогресс-бар
-    const progressPercent = Math.min(Math.round((balance / needed) * 100), 100);
-    document.getElementById('progressFill').style.width = `${progressPercent}%`;
-    document.getElementById('progressPercent').textContent = `${progressPercent}%`;
-    
-    // Анимация прогресса
+    // Анимация счетчиков
     animateCounter('balance', balance);
     animateCounter('freeCoffee', freeCoffee);
 }
 
-// ==================== АНИМАЦИЯ СЧЕТЧИКА ====================
+// ==================== АНИМАЦИЯ СЧЕТЧИКОВ ====================
 function animateCounter(elementId, finalValue) {
     const element = document.getElementById(elementId);
     const currentValue = parseInt(element.textContent) || 0;
@@ -148,7 +104,7 @@ function animateCounter(elementId, finalValue) {
     if (currentValue === finalValue) return;
     
     let start = null;
-    const duration = 1000;
+    const duration = 500;
     
     function step(timestamp) {
         if (!start) start = timestamp;
@@ -165,48 +121,29 @@ function animateCounter(elementId, finalValue) {
     window.requestAnimationFrame(step);
 }
 
-// ==================== ДЕМО-РЕЖИМ ====================
-function showDemoMode() {
+// ==================== ПУСТОЕ СОСТОЯНИЕ (когда нет данных) ====================
+function showEmptyState() {
+    // Показываем стандартную информацию
     document.getElementById('userInfo').innerHTML = `
         <div style="text-align: right;">
-            <div style="font-weight: 700; margin-bottom: 3px;">ВОЙДИТЕ В БОТА</div>
-            <div style="font-size: 12px; color: #666;">Напишите /start в @blackcoffee_loyalty_bot</div>
+            <div style="font-weight: 700; margin-bottom: 3px;">BLACK COFFEE</div>
+            <div style="font-size: 12px; color: #666;">Loyalty Program</div>
         </div>
     `;
     
-    // Показываем нулевые значения вместо демо
-    const emptyData = {
-        balance: 0,
-        free_coffee: 0,
-        needed: 10
-    };
-    
-    displayUserStats(emptyData);
-}
-// ==================== РЕЖИМ ОШИБКИ ====================
-function showErrorState() {
-    document.getElementById('userInfo').innerHTML = `
-        <div style="text-align: center; color: #888;">
-            Ошибка загрузки
-        </div>
-    `;
-    
-    document.getElementById('balance').textContent = '0';
-    document.getElementById('freeCoffee').textContent = '0';
-    document.getElementById('progressText').textContent = '0/10';
-    document.getElementById('progressFill').style.width = '0%';
-    document.getElementById('progressPercent').textContent = '0%';
+    // Показываем нулевые значения
+    updateStats({ balance: 0, free_coffee: 0, needed: 10 });
 }
 
 // ==================== ИНИЦИАЛИЗАЦИЯ ====================
 document.addEventListener('DOMContentLoaded', () => {
-    // Загружаем данные при старте
+    // Загружаем данные
     loadUserData();
     
     // Обновляем каждые 30 секунд
     setInterval(loadUserData, 30000);
     
-    // Добавляем анимации при наведении
+    // Добавляем эффекты при наведении
     addHoverEffects();
 });
 
@@ -234,4 +171,13 @@ function addHoverEffects() {
             item.style.transform = 'scale(1)';
         });
     });
+}
+
+// ==================== ОТКРЫТИЕ БОТА ====================
+function openTelegram() {
+    if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.openTelegramLink('https://t.me/blackcoffee_loyalty_bot');
+    } else {
+        window.open('https://t.me/blackcoffee_loyalty_bot', '_blank');
+    }
 }
