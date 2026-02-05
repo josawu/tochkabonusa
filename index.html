@@ -2,118 +2,854 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLACK COFFEE LOYALTY</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coffee Loyalty</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        :root {
+            --bg: #ffffff;
+            --text: #000000;
+            --text-secondary: #666666;
+            --border: #e0e0e0;
+            --accent: #000000;
+            --success: #000000;
+            --error: #000000;
+            --card-bg: #f5f5f5;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 30px;
+        }
+        
+        .logo {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 25px 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .progress-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .progress-badge {
+            background: var(--text);
+            color: var(--bg);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .progress-bar-container {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            background: var(--text);
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+        
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        .progress-text strong {
+            color: var(--text);
+        }
+        
+        /* Action Buttons */
+        .action-grid {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .btn {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 20px;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--text);
+        }
+        
+        .btn-icon {
+            font-size: 20px;
+        }
+        
+        .btn input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        /* History */
+        .history-section {
+            margin-top: 30px;
+        }
+        
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .history-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .history-info h4 {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .history-date {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .history-points {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .history-points.positive {
+            color: var(--success);
+        }
+        
+        .history-points.negative {
+            color: var(--error);
+        }
+        
+        /* QR Code Section */
+        .qr-section {
+            background: var(--text);
+            color: var(--bg);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            display: none;
+        }
+        
+        .qr-section.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .qr-code {
+            width: 200px;
+            height: 200px;
+            background: white;
+            margin: 20px auto;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: black;
+            position: relative;
+        }
+        
+        .qr-placeholder {
+            font-size: 80px;
+        }
+        
+        .redeem-code {
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+        
+        /* Loading & States */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+        
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--text);
+            color: var(--bg);
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        /* Upload Preview */
+        .upload-preview {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .upload-preview.active {
+            display: flex;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            max-height: 60vh;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .preview-actions {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .preview-btn {
+            flex: 1;
+            padding: 15px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .preview-btn.confirm {
+            background: white;
+            color: black;
+        }
+        
+        .preview-btn.cancel {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
+    <div class="container">
         <!-- Header -->
-        <header class="app-header">
-            <div class="logo">
-                <div class="logo-icon">☕</div>
-                <h1>Точка Черного</h1>
-                <div class="logo-subtitle">Бонусная программа</div>
+        <div class="header">
+            <div class="logo">☕</div>
+            <h1 class="title">Coffee Loyalty</h1>
+            <p class="subtitle">Программа лояльности</p>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="pointsValue">0</div>
+                <div class="stat-label">Баллов</div>
             </div>
-            <div class="user-info" id="userInfo">
-                <div class="loader"></div>
+            <div class="stat-card">
+                <div class="stat-value" id="coffeesValue">0</div>
+                <div class="stat-label">Кофе бесплатно</div>
             </div>
-        </header>
-
-        <!-- Main Content -->
-        <main class="app-main">
-            <!-- Stats -->
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">🛒</div>
-                    <div class="stat-content">
-                        <div class="stat-label">ПОКУПОК</div>
-                        <div class="stat-value" id="balance">0</div>
-                    </div>
+        </div>
+        
+        <!-- Progress -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">Прогресс</span>
+                <span class="progress-badge" id="progressBadge">0/10</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+            </div>
+            <p class="progress-text" id="progressText">
+                Загрузите <strong>10 чеков</strong> для бесплатного кофе
+            </p>
+        </div>
+        
+        <!-- QR Code (появляется при нажатии "Получить кофе") -->
+        <div class="qr-section" id="qrSection">
+            <h3>🎉 Бесплатный кофе!</h3>
+            <p style="opacity: 0.8; margin: 10px 0;">Покажите этот код бариста</p>
+            <div class="qr-code">
+                <div class="qr-placeholder">📱</div>
+            </div>
+            <div class="redeem-code" id="redeemCode">CF-XXXXXX</div>
+            <p style="font-size: 12px; opacity: 0.6; margin-top: 15px;">
+                Код действителен 15 минут
+            </p>
+        </div>
+        
+        <!-- Actions -->
+        <div class="action-grid">
+            <button class="btn" id="uploadBtn">
+                <span class="btn-icon">📸</span>
+                <span>Загрузить чек</span>
+                <input type="file" id="fileInput" accept="image/*" capture="environment">
+            </button>
+            
+            <button class="btn btn-secondary" id="redeemBtn">
+                <span class="btn-icon">☕</span>
+                <span>Получить бесплатный кофе</span>
+            </button>
+        </div>
+        
+        <!-- History -->
+        <div class="history-section">
+            <h2 class="section-title">
+                <span>📋</span>
+                <span>История</span>
+            </h2>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <div class="empty-icon">📭</div>
+                    <p>История пока пуста</p>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">🎁</div>
-                    <div class="stat-content">
-                        <div class="stat-label">БЕСПЛАТНО</div>
-                        <div class="stat-value" id="freeCoffee">0</div>
-                    </div>
-                </div>
             </div>
-
-            <!-- Progress -->
-            <div class="progress-section">
-                <div class="progress-header">
-                    <span>ДО СЛЕДУЮЩЕГО КОФЕ</span>
-                    <span id="progressText">0/10</span>
-                </div>
-                <div class="progress-track">
-                    <div class="progress-fill" id="progressFill"></div>
-                </div>
-                <div class="progress-percent" id="progressPercent">0%</div>
-            </div>
-
-            <!-- How It Works -->
-            <div class="instructions-card">
-                <h2><i class="fas fa-camera"></i> КАК РАБОТАЕТ</h2>
-                <ol class="steps-list">
-                    <li>Сфотографируйте чек после покупки</li>
-                    <li>Отправьте фото в @CoffeeBonus74_bot</li>
-                    <li>Получите 1 балл после проверки</li>
-                    <li>10 баллов = 1 бесплатный кофе</li>
-                </ol>
-                <button class="action-btn" onclick="openTelegram()">
-                    <i class="fab fa-telegram"></i> ОТКРЫТЬ БОТА
-                </button>
-            </div>
-
-            <!-- Available Drinks -->
-            <div class="drinks-section">
-                <h2><i class="fas fa-mug-hot"></i> ДОСТУПНЫЕ НАПИТКИ</h2>
-                <div class="drinks-grid">
-                    <div class="drink-item">ESPRESSO</div>
-                    <div class="drink-item">AMERICANO</div>
-                    <div class="drink-item">CAPPUCCINO</div>
-                    <div class="drink-item">LATTE</div>
-                    <div class="drink-item">FLAT WHITE</div>
-                    <div class="drink-item">MACCHIATO</div>
-                </div>
-            </div>
-
-            <!-- Rules -->
-            <div class="rules-card">
-                <h2><i class="fas fa-info-circle"></i> ПРАВИЛА</h2>
-                <ul class="rules-list">
-                    <li>1 покупка = 1 балл</li>
-                    <li>10 баллов = 1 кофе бесплатно</li>
-                    <li>Чеки проверяются вручную (1-2 минуты)</li>
-                    <li>Баллы не сгорают</li>
-                    <li>Программа действует бессрочно</li>
-                </ul>
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="app-footer">
-            <div class="footer-text">
-                Точка Черного • МИНИМАЛИЗМ • СТИЛЬ
-            </div>
-            <div class="footer-copy">
-                &copy; 2026 • Все права защищены
-            </div>
-        </footer>
+        </div>
     </div>
+    
+    <!-- Upload Preview Modal -->
+    <div class="upload-preview" id="uploadPreview">
+        <img class="preview-image" id="previewImage" src="" alt="Preview">
+        <div class="preview-actions">
+            <button class="preview-btn cancel" id="cancelUpload">Отмена</button>
+            <button class="preview-btn confirm" id="confirmUpload">
+                <span id="uploadBtnText">Подтвердить</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
 
-    <!-- Scripts -->
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="script.js"></script>
     <script>
-        function openTelegram() {
-            if (window.Telegram && Telegram.WebApp) {
-                Telegram.WebApp.openTelegramLink('https://t.me/CoffeeBonus74_bot');
-            } else {
-                window.open('https://t.me/CoffeeBonus74_bot', '_blank');
+        // ==================== CONFIG ====================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwMiLqR0Q-q89BCrxI-_VWuciXn8NB7Myonyr9a-RElGvYCM6tUdGziLVT9vMRatGD5Gw/exec'; // Замените на URL из шага 2
+        
+        // ==================== STATE ====================
+        let currentUser = null;
+        let selectedFile = null;
+        let tg = window.Telegram.WebApp;
+        
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            tg.ready();
+            tg.expand();
+            
+            // Устанавливаем цвета в соответствии с темой Telegram
+            tg.setHeaderColor('#ffffff');
+            tg.setBackgroundColor('#ffffff');
+            
+            initUser();
+            setupEventListeners();
+        });
+        
+        // ==================== USER & DATA ====================
+        async function initUser() {
+            const user = tg.initDataUnsafe?.user;
+            if(!user) {
+                showToast('Ошибка: пользователь не найден');
+                return;
             }
+            
+            currentUser = user;
+            
+            // Регистрируем пользователя
+            await registerUser(user);
+            
+            // Загружаем данные
+            await loadUserData();
+        }
+        
+        async function registerUser(user) {
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'register_user',
+                        user_id: user.id,
+                        username: user.username,
+                        first_name: user.first_name,
+                        last_name: user.last_name
+                    })
+                });
+            } catch(e) {
+                console.error('Registration error:', e);
+            }
+        }
+        
+        async function loadUserData() {
+            try {
+                // Загружаем профиль
+                const userResponse = await fetch(`${API_URL}?action=get_user&user_id=${currentUser.id}`);
+                const userData = await userResponse.json();
+                
+                if(!userData.error) {
+                    updateUI(userData);
+                }
+                
+                // Загружаем историю
+                const historyResponse = await fetch(`${API_URL}?action=get_history&user_id=${currentUser.id}`);
+                const historyData = await historyResponse.json();
+                
+                if(historyData.history) {
+                    renderHistory(historyData.history);
+                }
+            } catch(e) {
+                console.error('Load data error:', e);
+                showToast('Ошибка загрузки данных');
+            }
+        }
+        
+        function updateUI(data) {
+            const points = parseInt(data.points) || 0;
+            const redeemed = parseInt(data.free_coffees_redeemed) || 0;
+            const progress = points % 10;
+            const percentage = (progress / 10) * 100;
+            
+            // Анимация чисел
+            animateNumber('pointsValue', points);
+            animateNumber('coffeesValue', redeemed);
+            
+            // Прогресс бар
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressBadge').textContent = `${progress}/10`;
+            
+            const remaining = 10 - progress;
+            document.getElementById('progressText').innerHTML = 
+                progress === 0 && points > 0 
+                    ? '🎉 У вас есть бесплатный кофе! Нажмите кнопку ниже.'
+                    : `Загрузите <strong>${remaining} чеков</strong> для бесплатного кофе`;
+            
+            // Обновляем кнопку получения кофе
+            const redeemBtn = document.getElementById('redeemBtn');
+            if(points >= 10) {
+                redeemBtn.style.opacity = '1';
+                redeemBtn.disabled = false;
+            } else {
+                redeemBtn.style.opacity = '0.5';
+                redeemBtn.disabled = true;
+            }
+        }
+        
+        function animateNumber(id, value) {
+            const element = document.getElementById(id);
+            const start = parseInt(element.textContent);
+            const duration = 1000;
+            const startTime = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeProgress = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(start + (value - start) * easeProgress);
+                
+                element.textContent = current;
+                
+                if(progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+        
+        function renderHistory(history) {
+            const container = document.getElementById('historyList');
+            
+            if(history.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>История пока пуста</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = history.slice(0, 10).map(item => `
+                <div class="history-item">
+                    <div class="history-info">
+                        <h4>${item.description}</h4>
+                        <div class="history-date">${formatDate(item.date)}</div>
+                    </div>
+                    <div class="history-points ${item.points > 0 ? 'positive' : 'negative'}">
+                        ${item.points > 0 ? '+' : ''}${item.points}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('ru-RU', {
+                day: 'numeric',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // ==================== EVENT LISTENERS ====================
+        function setupEventListeners() {
+            // Upload
+            const fileInput = document.getElementById('fileInput');
+            const uploadPreview = document.getElementById('uploadPreview');
+            const previewImage = document.getElementById('previewImage');
+            const cancelUpload = document.getElementById('cancelUpload');
+            const confirmUpload = document.getElementById('confirmUpload');
+            
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if(!file) return;
+                
+                selectedFile = file;
+                const reader = new FileReader();
+                
+                reader.onload = (event) => {
+                    previewImage.src = event.target.result;
+                    uploadPreview.classList.add('active');
+                };
+                
+                reader.readAsDataURL(file);
+            });
+            
+            cancelUpload.addEventListener('click', () => {
+                uploadPreview.classList.remove('active');
+                selectedFile = null;
+                fileInput.value = '';
+            });
+            
+            confirmUpload.addEventListener('click', handleUpload);
+            
+            // Redeem
+            document.getElementById('redeemBtn').addEventListener('click', handleRedeem);
+        }
+        
+        // ==================== UPLOAD ====================
+        async function handleUpload() {
+            if(!selectedFile) return;
+            
+            const btnText = document.getElementById('uploadBtnText');
+            const originalText = btnText.textContent;
+            btnText.innerHTML = '<div class="loading"></div>';
+            
+            try {
+                // Конвертируем файл в base64
+                const base64 = await fileToBase64(selectedFile);
+                
+                // Отправляем на сервер
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'upload_check',
+                        user_id: currentUser.id,
+                        photo_base64: base64,
+                        upload_source: 'mini_app'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                document.getElementById('uploadPreview').classList.remove('active');
+                document.getElementById('fileInput').value = '';
+                selectedFile = null;
+                btnText.textContent = originalText;
+                
+                if(result.success) {
+                    showToast('✅ +1 балл! Чек загружен');
+                    await loadUserData(); // Обновляем данные
+                    
+                    // Вибрация успеха
+                    if(tg.HapticFeedback) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }
+                } else {
+                    if(result.error === 'DUPLICATE_CHECK') {
+                        showToast('❌ Этот чек уже был загружен');
+                        if(tg.HapticFeedback) {
+                            tg.HapticFeedback.notificationOccurred('error');
+                        }
+                    } else {
+                        showToast('❌ Ошибка: ' + result.message);
+                    }
+                }
+            } catch(e) {
+                console.error('Upload error:', e);
+                showToast('❌ Ошибка загрузки');
+                btnText.textContent = originalText;
+            }
+        }
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // ==================== REDEEM ====================
+        async function handleRedeem() {
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: 'redeem_coffee',
+                        user_id: currentUser.id
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if(result.success) {
+                    document.getElementById('redeemCode').textContent = result.redeem_code;
+                    document.getElementById('qrSection').classList.add('active');
+                    
+                    // Прокручиваем к QR
+                    document.getElementById('qrSection').scrollIntoView({ behavior: 'smooth' });
+                    
+                    if(tg.HapticFeedback) {
+                        tg.HapticFeedback.notificationOccurred('success');
+                    }
+                    
+                    await loadUserData(); // Обновляем баланс
+                } else {
+                    showToast('❌ ' + result.message);
+                    if(tg.HapticFeedback) {
+                        tg.HapticFeedback.notificationOccurred('error');
+                    }
+                }
+            } catch(e) {
+                console.error('Redeem error:', e);
+                showToast('❌ Ошибка');
+            }
+        }
+        
+        // ==================== UTILS ====================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
         }
     </script>
 </body>
