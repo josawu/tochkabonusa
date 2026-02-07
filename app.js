@@ -44,3 +44,4 @@ function getCoffee(){
     fetchPoints();
   });
 }
+const BACKEND_URL = "https://script.google.com/macros/s/AKfycbzlC6QfjeGOx-OoEXS07FDFjQoXyzkm-iDj1_1RXMl3btLbEi2EmCqD1JVl3WpgOWnH-Q/exec";
