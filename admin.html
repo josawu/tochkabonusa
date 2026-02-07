@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Coffee Loyalty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-size: 32px;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #a3a3a3;
+            margin-bottom: 32px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: #f5f5f5;
+            padding: 24px;
+            border-radius: 12px;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #a3a3a3;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .section-title {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #a3a3a3;
+            margin-bottom: 16px;
+        }
+        
+        .checks-grid {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .check-card {
+            background: #f5f5f5;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        
+        .check-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            background: #e5e5e5;
+            cursor: zoom-in;
+        }
+        
+        .check-info {
+            padding: 20px;
+        }
+        
+        .check-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        
+        .check-id {
+            font-family: monospace;
+            font-size: 12px;
+            color: #a3a3a3;
+            background: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        
+        .check-date {
+            font-size: 13px;
+            color: #a3a3a3;
+        }
+        
+        .check-user {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        
+        .check-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .points-input {
+            width: 60px;
+            padding: 10px;
+            border: 1px solid #e5e5e5;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-approve {
+            background: #000;
+            color: #fff;
+        }
+        
+        .btn-reject {
+            background: #fff;
+            color: #000;
+            border: 1px solid #e5e5e5;
+        }
+        
+        .empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #a3a3a3;
+        }
+        
+        .refresh-btn {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #000;
+            color: #fff;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .refresh-btn:active {
+            transform: scale(0.9);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            padding: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            font-size: 40px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        @media (min-width: 768px) {
+            .checks-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Админ-панель</h1>
+    <div class="subtitle">Модерация чеков</div>
+    
+    <div class="stats">
+        <div class="stat-card">
+            <div class="stat-value" id="statUsers">-</div>
+            <div class="stat-label">Пользователей</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="statPending">-</div>
+            <div class="stat-label">На проверке</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value" id="statApproved">-</div>
+            <div class="stat-label">Одобрено</div>
+        </div>
+    </div>
+    
+    <div class="section-title">Чеки на проверке</div>
+    <div class="checks-grid" id="checksList">
+        <div class="empty">Загрузка...</div>
+    </div>
+    
+    <button class="refresh-btn" onclick="loadData()" title="Обновить">↻</button>
+    
+    <div class="modal" id="modal">
+        <button class="modal-close" onclick="closeModal()">×</button>
+        <img class="modal-img" id="modalImg">
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIG - ЗАМЕНИТЕ НА ВАШИ ДАННЫЕ
+        // ==========================================
+        const API_URL = 'https://script.google.com/macros/s/ВАШ_КОД/exec';
+        const ADMIN_ID = 'ВАШ_TG_ID';
+        
+        // ==========================================
+        // ADMIN APP
+        // ==========================================
+        
+        // Load on start
+        loadData();
+        
+        // Auto refresh every 30 sec
+        setInterval(loadData, 30000);
+        
+        async function loadData() {
+            await Promise.all([loadStats(), loadChecks()]);
+        }
+        
+        async function loadStats() {
+            try {
+                const res = await fetch(`${API_URL}?action=adminStats&user_id=${ADMIN_ID}`);
+                const data = await res.json();
+                
+                if (data.success) {
+                    document.getElementById('statUsers').textContent = data.stats.users;
+                    document.getElementById('statPending').textContent = data.stats.pending;
+                    document.getElementById('statApproved').textContent = data.stats.approved;
+                }
+            } catch(e) {
+                console.error('Stats error:', e);
+            }
+        }
+        
+        async function loadChecks() {
+            const container = document.getElementById('checksList');
+            
+            try {
+                const res = await fetch(`${API_URL}?action=adminPending&user_id=${ADMIN_ID}`);
+                const data = await res.json();
+                
+                if (!data.success || !data.checks.length) {
+                    container.innerHTML = '<div class="empty">Нет чеков на проверке</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.checks.map(check => `
+                    <div class="check-card" data-id="${check.check_id}">
+                        <img class="check-image" src="${check.photo_url}" 
+                             onclick="openModal('${check.photo_url}')"
+                             onerror="this.style.display='none'">
+                        <div class="check-info">
+                            <div class="check-header">
+                                <span class="check-id">${check.check_id}</span>
+                                <span class="check-date">${formatDate(check.date)}</span>
+                            </div>
+                            <div class="check-user">User: ${check.user_id}</div>
+                            <div class="check-actions">
+                                <input type="number" class="points-input" value="3" min="1" max="10" 
+                                       id="pts-${check.check_id}">
+                                <button class="btn btn-approve" onclick="review('${check.check_id}', 'approved')">
+                                    ✓ Одобрить
+                                </button>
+                                <button class="btn btn-reject" onclick="review('${check.check_id}', 'rejected')">
+                                    ✕ Отклонить
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+                
+            } catch(e) {
+                container.innerHTML = '<div class="empty">Ошибка загрузки</div>';
+                console.error('Checks error:', e);
+            }
+        }
+        
+        async function review(checkId, status) {
+            const points = document.getElementById(`pts-${checkId}`).value;
+            const card = document.querySelector(`[data-id="${checkId}"]`);
+            
+            // Visual feedback
+            card.style.opacity = '0.5';
+            card.style.pointerEvents = 'none';
+            
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        action: 'reviewCheck',
+                        admin_id: ADMIN_ID,
+                        check_id: checkId,
+                        status: status,
+                        points: parseInt(points)
+                    })
+                });
+                
+                const data = await res.json();
+                
+                if (data.success) {
+                    card.remove();
+                    await loadStats();
+                    
+                    if (!document.querySelectorAll('.check-card').length) {
+                        document.getElementById('checksList').innerHTML = 
+                            '<div class="empty">Все чеки проверены</div>';
+                    }
+                } else {
+                    throw new Error(data.error);
+                }
+                
+            } catch(e) {
+                alert('Ошибка: ' + e.message);
+                card.style.opacity = '1';
+                card.style.pointerEvents = 'all';
+            }
+        }
+        
+        function openModal(url) {
+            document.getElementById('modalImg').src = url;
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        function formatDate(dateStr) {
+            const d = new Date(dateStr);
+            return d.toLocaleString('ru-RU', { 
+                day: 'numeric', 
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+    </script>
+</body>
+</html>
