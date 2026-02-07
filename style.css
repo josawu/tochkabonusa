@@ -1,0 +1,23 @@
+body {
+  background:#fff;
+  color:#000;
+  font-family:Inter, sans-serif;
+  padding:20px;
+}
+
+.card {
+  border:1px solid #000;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:16px;
+}
+
+button {
+  width:100%;
+  padding:16px;
+  font-size:18px;
+  background:#000;
+  color:#fff;
+  border:none;
+  border-radius:12px;
+}
