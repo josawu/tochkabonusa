@@ -2,17 +2,41 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Coffee Loyalty</title>
+
 <link rel="stylesheet" href="style.css">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
 
-<div class="card">
-  <h1 id="points">0 баллов</h1>
+<div class="card main">
+  <h2>☕ Бесплатный кофе</h2>
+
+  <div class="progress-wrap">
+    <div class="progress">
+      <div id="bar"></div>
+    </div>
+    <div class="progress-text">
+      <span id="current">0</span> / 10 баллов
+    </div>
+    <div class="left">
+      Осталось: <span id="left">10</span>
+    </div>
+  </div>
 </div>
 
 <div class="card">
-  <button onclick="getCoffee()">☕ Получить бесплатный кофе</button>
+  <h3>🧾 Загрузить чек</h3>
+  <input type="file" id="check" accept="image/*">
+  <button onclick="sendCheck()">Отправить чек</button>
+  <div id="checkStatus" class="hint"></div>
+</div>
+
+<div class="card">
+  <button id="coffeeBtn" class="disabled" onclick="getCoffee()">
+    🎁 Получить бесплатный кофе
+  </button>
 </div>
 
 <script src="app.js"></script>
